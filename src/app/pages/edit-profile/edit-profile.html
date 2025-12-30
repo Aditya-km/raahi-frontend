@@ -1,0 +1,29 @@
+<app-sidebar></app-sidebar>
+
+<div class="min-h-screen px-6 py-12 bg-gradient-to-br from-white via-gray-100 to-gray-200 flex justify-center pb-32">
+  <div class="w-full max-w-xl bg-white rounded-xl shadow p-8">
+
+    <h2 class="text-2xl font-bold mb-6 text-gray-900">Edit Profile</h2>
+
+    <div *ngIf="loading" class="text-center text-gray-500">Loading...</div>
+
+    <div *ngIf="!loading">
+      <label class="block mb-2 font-semibold text-gray-800">Full Name</label>
+
+      <input 
+        [(ngModel)]="full_name"
+        class="w-full p-3 border border-gray-300 rounded-lg text-gray-900"
+        type="text"
+        placeholder="Enter your name"
+      />
+
+      <button 
+        (click)="saveProfile()"
+        class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:opacity-95 transition"
+      >
+        Save
+      </button>
+    </div>
+
+  </div>
+</div>

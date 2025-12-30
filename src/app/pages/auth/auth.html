@@ -1,0 +1,76 @@
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-white via-gray-100 to-gray-200 text-gray-900 p-6">
+
+  <div class="bg-white/70 backdrop-blur-lg rounded-2xl shadow-lg w-full max-w-md p-8 animate-fade-in">
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-orange-400 to-pink-500 rounded-2xl flex items-center justify-center shadow-glow text-3xl">
+        ✈️
+      </div>
+
+      <h1 class="text-3xl font-bold mb-2 text-gray-900">Welcome to Raahi 2.0</h1>
+      <p class="text-gray-600">Your AI travel companion awaits</p>
+    </div>
+
+    <form (ngSubmit)="handleAuth()" class="space-y-4">
+      <div *ngIf="mode === 'signup'" class="space-y-1">
+        <label class="block text-sm font-medium text-gray-800">Full Name</label>
+        <input
+          [(ngModel)]="fullName"
+          name="fullName"
+          type="text"
+          placeholder="John Doe"
+          class="w-full rounded-lg px-4 py-3 text-black bg-white border border-gray-300"
+          required
+        />
+      </div>
+
+      <div class="space-y-1">
+        <label class="block text-sm font-medium text-gray-800">Email</label>
+        <input
+          [(ngModel)]="email"
+          name="email"
+          type="email"
+          placeholder="you@example.com"
+          class="w-full rounded-lg px-4 py-3 text-black bg-white border border-gray-300"
+          required
+        />
+      </div>
+
+      <div class="space-y-1">
+        <label class="block text-sm font-medium text-gray-800">Password</label>
+        <input
+          [(ngModel)]="password"
+          name="password"
+          type="password"
+          placeholder="••••••••"
+          class="w-full rounded-lg px-4 py-3 text-black bg-white border border-gray-300"
+          required
+        />
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="loading"
+        class="w-full py-3 mt-4 rounded-lg bg-gradient-to-r from-orange-400 to-pink-500 text-white font-semibold hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {{ loading ? 'Please wait...' : (mode === 'signin' ? 'Sign In' : 'Sign Up') }}
+      </button>
+    </form>
+
+    <div class="text-center mt-6">
+      <p class="text-gray-700">
+        {{ mode === 'signin' ? "Don't have an account?" : 'Already have an account?' }}
+        <button
+          (click)="toggleMode()"
+          type="button"
+          class="text-orange-600 font-semibold underline hover:text-orange-700 transition"
+        >
+          {{ mode === 'signin' ? 'Sign Up' : 'Sign In' }}
+        </button>
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <a routerLink="/" class="text-gray-700 hover:text-gray-900 underline text-sm">← Back to Home</a>
+  </div>
+</div>

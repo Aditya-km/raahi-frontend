@@ -1,0 +1,322 @@
+<app-sidebar></app-sidebar>
+
+<div
+  class="min-h-screen px-6 py-12 bg-gradient-to-br from-white via-gray-100 to-gray-200 pb-32"
+>
+  <div class="max-w-4xl mx-auto">
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-24">
+      <p class="text-gray-600">Loading profile...</p>
+    </div>
+
+    <!-- PROFILE WRAPPER -->
+    <div
+      *ngIf="!loading"
+      class="bg-white/70 backdrop-blur-xl rounded-2xl shadow-md p-8 animate-fade-in"
+    >
+
+      <!-- TOP SECTION: AVATAR + NAME + ACTIONS -->
+      <div class="flex flex-col md:flex-row md:items-center gap-8">
+
+        <!-- AVATAR COLUMN -->
+        <div class="flex flex-col items-center md:items-start gap-3">
+          <div class="relative">
+            <!-- DP image if exists -->
+            <img
+              *ngIf="profile?.avatar_url"
+              [src]="profile.avatar_url"
+              alt="Profile photo"
+              class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
+            />
+
+            <!-- Initials circle fallback -->
+            <div
+              *ngIf="!profile?.avatar_url"
+              class="w-28 h-28 rounded-full bg-gradient-to-r from-indigo-400 to-teal-400 flex items-center justify-center text-3xl font-bold text-white shadow-md"
+            >
+              {{ initials() }}
+            </div>
+          </div>
+
+          <!-- Change photo button -->
+          <div class="flex flex-col items-center md:items-start">
+            <button
+              class="text-xs px-3 py-1 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-800 transition flex items-center gap-1"
+              (click)="avatarInput.click()"
+              [disabled]="avatarUploading"
+            >
+              <span *ngIf="!avatarUploading">Change photo</span>
+              <span *ngIf="avatarUploading">Uploading...</span>
+            </button>
+            <input
+              #avatarInput
+              type="file"
+              accept="image/*"
+              hidden
+              (change)="onAvatarSelected($event)"
+            />
+          </div>
+        </div>
+
+        <!-- MAIN INFO COLUMN -->
+        <div class="flex-1">
+          <!-- Username + Buttons row -->
+          <div
+            class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+          >
+            <div>
+              <div class="flex flex-wrap items-center gap-3 mb-1">
+                <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">
+                  {{ profile?.full_name || 'Traveller' }}
+                </h1>
+              </div>
+              <p class="text-sm text-gray-500">
+                {{ user?.email }}
+              </p>
+              <p class="text-xs text-gray-400 mt-1">
+                Member since: {{ memberSince() }}
+              </p>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex flex-wrap gap-3 justify-start md:justify-end">
+              <button
+                (click)="goToEditProfile()"
+                class="px-4 py-2 text-sm rounded-lg border border-gray-300 text-gray-800 hover:bg-gray-100 transition"
+              >
+                Edit Profile
+              </button>
+
+              <button
+                (click)="goToSavedTrips()"
+                class="px-4 py-2 text-sm rounded-lg border border-gray-300 text-gray-800 hover:bg-gray-100 transition"
+              >
+                Saved Trips ({{ savedTripsCount }})
+              </button>
+            </div>
+          </div>
+
+          <!-- STATS ROW (like Instagram) -->
+          <div class="flex gap-8 mt-6 text-sm text-gray-800">
+            <div>
+              <span class="font-semibold">{{ postsCount }}</span> posts
+            </div>
+            <div>
+              <span class="font-semibold">{{ savedTripsCount }}</span> trips saved
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-6 border-gray-200" />
+
+      <!-- UPLOAD NEW PHOTO CARD -->
+      <div
+        class="bg-white/60 border border-gray-200 rounded-xl p-4 mb-6 flex flex-col gap-3"
+      >
+        <h2 class="text-sm font-semibold text-gray-800 flex items-center gap-2">
+          📸 Add a new post
+        </h2>
+
+        <div class="flex flex-col md:flex-row gap-3 md:items-center">
+          <!-- File input -->
+          <div>
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onPhotoFileSelected($event)"
+              class="block text-sm text-gray-600"
+            />
+          </div>
+
+          <!-- Caption -->
+          <input
+            [(ngModel)]="captionInput"
+            type="text"
+            placeholder="Write a caption..."
+            class="flex-1 text-sm px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+          />
+
+          <!-- Hashtags -->
+          <input
+            [(ngModel)]="hashtagsInput"
+            type="text"
+            placeholder="#mountains #temple"
+            class="flex-1 text-sm px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+          />
+
+          <button
+            (click)="uploadPhoto()"
+            [disabled]="uploadingPhoto"
+            class="px-4 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60 transition"
+          >
+            {{ uploadingPhoto ? 'Uploading...' : 'Post' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- GALLERY GRID -->
+      <div>
+        <div *ngIf="galleryLoading" class="text-gray-500 text-sm mb-4">
+          Loading your posts...
+        </div>
+
+        <div *ngIf="!galleryLoading && gallery.length === 0" class="text-gray-500 text-sm text-center py-8">
+          No posts yet. Upload your first travel photo above ✨
+        </div>
+
+        <div
+          *ngIf="!galleryLoading && gallery.length > 0"
+          class="grid grid-cols-3 gap-1 md:gap-3"
+        >
+          <button
+            *ngFor="let photo of gallery"
+            class="relative group w-full aspect-square overflow-hidden bg-gray-200"
+            (click)="openPhotoModal(photo)"
+          >
+            <img
+              [src]="photo.photo_url"
+              alt="Post"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+            />
+            <div
+              class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs text-white"
+            >
+              View
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO MODAL -->
+<div
+  *ngIf="showPhotoModal && selectedPhoto"
+  class="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+>
+  <div
+    class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col md:flex-row"
+  >
+    <!-- IMAGE -->
+    <div class="md:w-1/2 bg-black flex items-center justify-center">
+      <img
+        [src]="selectedPhoto.photo_url"
+        alt="Photo"
+        class="max-h-[80vh] w-full object-contain"
+      />
+    </div>
+
+    <!-- RIGHT PANE -->
+    <div class="md:w-1/2 flex flex-col p-4 relative">
+
+      <!-- Top bar -->
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div
+            class="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-400 to-teal-400 flex items-center justify-center text-xs font-bold text-white"
+          >
+            {{ initials() }}
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-semibold text-gray-800">
+              {{ profile?.full_name || 'Traveller' }}
+            </span>
+            <span class="text-[11px] text-gray-400">
+              {{ user?.email }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 3-dots menu -->
+        <div class="relative">
+          <button
+            (click)="toggleMoreMenu()"
+            class="text-xl text-gray-600 hover:text-black px-2"
+          >
+            ⋮
+          </button>
+
+          <div
+            *ngIf="showMoreMenu"
+            class="absolute right-0 mt-1 w-40 bg-white shadow-lg rounded-md border border-gray-200 text-sm z-10"
+          >
+            <button
+              class="w-full text-left px-3 py-2 hover:bg-gray-100"
+              (click)="savePhotoEdits()"
+            >
+              Save changes
+            </button>
+            <button
+              class="w-full text-left px-3 py-2 text-red-600 hover:bg-red-50"
+              (click)="deletePhoto()"
+            >
+              Delete photo
+            </button>
+            <button
+              class="w-full text-left px-3 py-2 hover:bg-gray-100"
+              (click)="closePhotoModal()"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Caption edit -->
+      <div class="flex-1 overflow-y-auto pr-1">
+        <label class="block text-xs font-semibold text-gray-600 mb-1">
+          Caption
+        </label>
+        <textarea
+          [(ngModel)]="editCaption"
+          rows="2"
+          class="w-full text-sm border border-gray-300 rounded-lg px-2 py-1 mb-3 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+        ></textarea>
+
+        <label class="block text-xs font-semibold text-gray-600 mb-1">
+          Hashtags
+        </label>
+        <input
+          [(ngModel)]="editHashtags"
+          type="text"
+          class="w-full text-sm border border-gray-300 rounded-lg px-2 py-1 mb-3 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+          placeholder="#hills #coffee #nature"
+        />
+
+        <!-- Display hashtags as chips -->
+        <div *ngIf="selectedPhoto?.hashtags?.length" class="flex flex-wrap gap-2 mt-1">
+          <span
+            *ngFor="let tag of selectedPhoto.hashtags"
+            class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[11px]"
+          >
+            #{{ tag }}
+          </span>
+        </div>
+
+        <p class="text-[11px] text-gray-400 mt-3">
+          Posted on:
+          {{ selectedPhoto.created_at | date: 'medium' }}
+        </p>
+      </div>
+
+      <!-- Bottom buttons (mobile-friendly) -->
+      <div class="flex justify-end gap-2 mt-3">
+        <button
+          class="px-3 py-1.5 text-xs rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100"
+          (click)="closePhotoModal()"
+        >
+          Close
+        </button>
+        <button
+          class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
+          (click)="savePhotoEdits()"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

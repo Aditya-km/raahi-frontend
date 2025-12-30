@@ -1,12 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ChatBubble } from './components/chat-bubble/chat-bubble';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  standalone: true,
+  imports: [RouterOutlet, ChatBubble],
+  templateUrl: './app.html',     // ✅ use external file
+  styleUrls: ['./app.css'],      // optional if you have CSS
 })
-export class App {
-  protected readonly title = signal('raahi-frontend');
-}
+export class App {}

@@ -1,0 +1,59 @@
+<app-sidebar></app-sidebar>
+
+<div class="min-h-screen bg-gradient-to-br from-white via-gray-100 to-gray-200 text-gray-900 px-6 py-12 pb-32">
+  <div class="max-w-6xl mx-auto text-center">
+
+    <h1 class="text-4xl md:text-5xl font-bold mb-6 animate-fade-in text-gray-900">
+      Discover Amazing Destinations ✨
+    </h1>
+
+    <p class="text-gray-600 text-lg mb-10">
+      Explore hidden gems and top attractions curated by Raahi AI
+    </p>
+
+    <!-- City Selector -->
+    <div class="flex flex-wrap justify-center gap-4 mb-10">
+      <button
+        *ngFor="let city of cities"
+        (click)="loadDestinations(city)"
+        class="px-6 py-2 rounded-lg border border-gray-400 hover:bg-gray-200 transition text-gray-800"
+        [ngClass]="{
+          'bg-white text-black font-semibold shadow-md': selectedCity === city
+        }"
+      >
+        {{ city }}
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center text-lg text-gray-600">
+      Loading attractions...
+    </div>
+
+    <!-- Destinations Grid -->
+    <div *ngIf="!loading" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        *ngFor="let place of destinations"
+        class="bg-white rounded-xl overflow-hidden shadow hover:shadow-xl transition transform hover:-translate-y-1"
+      >
+        <img [src]="place.image" alt="{{ place.name }}" class="h-48 w-full object-cover" />
+
+        <div class="p-4 text-left">
+          <h3 class="text-xl font-semibold mb-1 text-gray-900">{{ place.name }}</h3>
+
+          <p class="text-sm text-gray-600 mb-3">
+            {{ place.description }}
+          </p>
+
+          <button
+            (click)="goToPlan()"
+            class="px-4 py-2 rounded-lg bg-gradient-to-r from-orange-400 to-pink-500 text-white hover:opacity-90 transition"
+          >
+            Add to Trip →
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

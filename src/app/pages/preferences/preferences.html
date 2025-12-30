@@ -1,0 +1,88 @@
+<app-sidebar></app-sidebar>
+
+<div class="min-h-screen bg-gradient-to-br from-white via-gray-100 to-gray-200 flex items-center justify-center px-4 py-10 pb-32 text-gray-900">
+  <div class="w-full max-w-3xl bg-white/40 backdrop-blur-xl rounded-2xl shadow-lg p-8 animate-fade-in">
+
+    <h2 class="text-3xl font-bold text-center mb-6 text-gray-900">Plan Your Journey</h2>
+
+    <form (ngSubmit)="savePreferences()" class="grid md:grid-cols-2 gap-6">
+
+      <div>
+        <label class="block mb-1 text-gray-800">Start Location</label>
+        <input [(ngModel)]="startLocation" name="startLocation" type="text" class="input text-gray-900 border border-gray-300" required />
+      </div>
+
+      <div>
+        <label class="block mb-1 text-gray-800">Destination</label>
+        <input [(ngModel)]="destination" name="destination" type="text" class="input text-gray-900 border border-gray-300" required />
+      </div>
+
+      <div>
+        <label class="block mb-1 text-gray-800">Start Date</label>
+        <input [(ngModel)]="startDate" name="startDate" type="date" class="input text-gray-900 border border-gray-300" required />
+      </div>
+
+      <div>
+        <label class="block mb-1 text-gray-800">Return Date</label>
+        <input [(ngModel)]="returnDate" name="returnDate" type="date" class="input text-gray-900 border border-gray-300" required />
+      </div>
+
+      <div>
+        <label class="block mb-1 text-gray-800">Budget</label>
+        <input [(ngModel)]="budget" name="budget" type="text" placeholder="e.g. ₹30,000" class="input text-gray-900 border border-gray-300" />
+      </div>
+
+      <div>
+        <label class="block mb-1 text-gray-800">Travel Type</label>
+        <select [(ngModel)]="travelType" name="travelType" class="input text-gray-900 border border-gray-300">
+          <option>Solo</option>
+          <option>Partner</option>
+          <option>Friends</option>
+          <option>Family</option>
+        </select>
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block mb-1 text-gray-800">Preferences</label>
+        <textarea
+          [(ngModel)]="preferences"
+          name="preferences"
+          class="input text-gray-900 border border-gray-300"
+          rows="3"
+          placeholder="e.g. Nature, Food, Temples, Adventure"
+        ></textarea>
+      </div>
+
+      <!-- Group Members Section -->
+      <div *ngIf="travelType !== 'Solo'" class="md:col-span-2 bg-white/50 backdrop-blur-lg p-4 rounded-lg border border-gray-300">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-lg font-semibold text-gray-900">Group Members</h3>
+          <button type="button" (click)="addGroupMember()" class="text-teal-600 hover:underline">+ Add Member</button>
+        </div>
+
+        <div *ngFor="let member of groupMembers; let i = index" class="grid md:grid-cols-2 gap-4 mb-4">
+          <input [(ngModel)]="member.name" name="name{{i}}" placeholder="Member Name" class="input text-gray-900 border border-gray-300" />
+          <input [(ngModel)]="member.interests" name="interest{{i}}" placeholder="Interests" class="input text-gray-900 border border-gray-300" />
+
+          <button
+            type="button"
+            (click)="removeGroupMember(i)"
+            class="md:col-span-2 text-red-600 text-sm hover:underline"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+
+      <div class="md:col-span-2 flex justify-center mt-4">
+        <button
+          type="submit"
+          [disabled]="loading"
+          class="px-8 py-3 bg-gradient-to-r from-orange-400 to-pink-500 text-white rounded-lg font-semibold hover:opacity-90 transition"
+        >
+          {{ loading ? 'Saving...' : 'Save Preferences' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

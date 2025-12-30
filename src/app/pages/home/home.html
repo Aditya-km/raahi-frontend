@@ -1,0 +1,185 @@
+
+<!-- 🌄 Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+  <!-- Updated Animated Hero Background -->
+  <div
+    class="absolute inset-0 z-0 bg-cover bg-center animate-hero-pan"
+    style="background-image: url('assets/hero-travel.jpg')"
+  >
+    <!-- Beautiful gradient overlay -->
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-purple-700/60 via-pink-500/40 to-orange-400/50 mix-blend-overlay"
+    ></div>
+    <!-- Subtle dark overlay for text contrast -->
+    <div class="absolute inset-0 bg-black/40"></div>
+  </div>
+
+  <div class="container mx-auto px-4 z-10 text-center">
+    <div class="max-w-4xl mx-auto animate-fade-in">
+      <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+        Your AI Travel Companion
+      </h1>
+      <p class="text-xl md:text-2xl text-gray-200 mb-8 leading-relaxed">
+        Discover personalized journeys crafted by AI. From hidden gems to
+        sustainable adventures, Raahi 2.0 makes every trip unforgettable.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a routerLink="/auth">
+          <button
+            class="gradient-hero text-lg px-8 py-4 rounded-xl text-white hover:shadow-glow transition-base"
+          >
+            Start Planning →
+          </button>
+        </a>
+        <a routerLink="/discover">
+          <button
+            class="text-lg px-8 py-4 rounded-xl border border-white text-white hover:bg-white/20 transition-base"
+          >
+            Explore Destinations
+          </button>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating scroll indicator -->
+  <div
+    class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-float"
+  >
+    <div
+      class="w-6 h-10 border-2 border-white/70 rounded-full flex justify-center"
+    >
+      <div
+        class="w-1.5 h-3 bg-white/70 rounded-full mt-2 animate-pulse"
+      ></div>
+    </div>
+  </div>
+</section>
+
+<!-- ✨ Features Section -->
+<section class="py-20 px-4">
+  <div class="container mx-auto text-center">
+    <h2 class="text-4xl md:text-5xl font-bold mb-4">Travel Smarter with Raahi</h2>
+    <p class="text-xl text-muted-foreground max-w-2xl mx-auto mb-16">
+      AI-powered features that transform how you explore the world
+    </p>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="gradient-card p-6 rounded-xl shadow hover:shadow-md transition-base animate-slide-up">
+        <div class="gradient-hero w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-glow">
+          🧠
+        </div>
+        <h3 class="text-xl font-semibold mb-2">AI Trip Planning</h3>
+        <p class="text-muted-foreground">
+          Personalized itineraries based on your preferences, budget, and interests
+        </p>
+      </div>
+
+      <div class="gradient-card p-6 rounded-xl shadow hover:shadow-md transition-base animate-slide-up">
+        <div class="gradient-hero w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-glow">
+          🗺️
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Live Updates</h3>
+        <p class="text-muted-foreground">
+          Real-time adjustments for weather, traffic, and local events
+        </p>
+      </div>
+
+      <div class="gradient-card p-6 rounded-xl shadow hover:shadow-md transition-base animate-slide-up">
+        <div class="gradient-hero w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-glow">
+          💎
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Hidden Gems</h3>
+        <p class="text-muted-foreground">
+          Discover authentic local experiences beyond tourist spots
+        </p>
+      </div>
+
+      <div class="gradient-card p-6 rounded-xl shadow hover:shadow-md transition-base animate-slide-up">
+        <div class="gradient-hero w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-glow">
+          🌿
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Sustainable Travel</h3>
+        <p class="text-muted-foreground">
+          Eco-friendly options to minimize your environmental impact
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 🌍 Popular Destinations -->
+<section class="py-20 px-4 bg-muted/30">
+  <div class="container mx-auto text-center">
+    <h2 class="text-4xl md:text-5xl font-bold mb-4">Popular Destinations</h2>
+    <p class="text-xl text-muted-foreground max-w-2xl mx-auto mb-16">
+      Explore trending travel spots curated by our AI
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- 🏖️ Beach -->
+      <div class="overflow-hidden rounded-xl shadow group hover:shadow-lg transition-base">
+        <img
+          src="assets/destination-beach.jpg"
+          class="h-64 w-full object-cover group-hover:scale-110 transition-slow"
+          alt="Tropical Beach"
+        />
+        <div class="p-6 text-left">
+          <h3 class="text-2xl font-semibold mb-2">Tropical Beaches</h3>
+          <p class="text-muted-foreground">Crystal clear waters and pristine shores</p>
+        </div>
+      </div>
+
+      <!-- 🏯 Culture -->
+      <div class="overflow-hidden rounded-xl shadow group hover:shadow-lg transition-base">
+        <img
+          src="assets/destination-cultural.jpg"
+          class="h-64 w-full object-cover group-hover:scale-110 transition-slow"
+          alt="Cultural Heritage"
+        />
+        <div class="p-6 text-left">
+          <h3 class="text-2xl font-semibold mb-2">Cultural Heritage</h3>
+          <p class="text-muted-foreground">Ancient temples and rich traditions</p>
+        </div>
+      </div>
+
+      <!-- 🏔️ Adventure -->
+      <div class="overflow-hidden rounded-xl shadow group hover:shadow-lg transition-base">
+        <img
+          src="assets/destination-adventure.jpg"
+          class="h-64 w-full object-cover group-hover:scale-110 transition-slow"
+          alt="Nature Adventure"
+        />
+        <div class="p-6 text-left">
+          <h3 class="text-2xl font-semibold mb-2">Nature Adventures</h3>
+          <p class="text-muted-foreground">Hiking trails and scenic waterfalls</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 🎯 CTA -->
+<section class="py-20 px-4">
+  <div class="container mx-auto text-center gradient-hero text-white p-12 rounded-3xl shadow-lg">
+    <h2 class="text-4xl md:text-5xl font-bold mb-4">
+      Ready for Your Next Adventure?
+    </h2>
+    <p class="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
+      Join thousands of travelers using AI to plan perfect trips
+    </p>
+    <a routerLink="/auth">
+  <button
+    class="bg-white text-teal-600 px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-lg transition-base"
+  >
+    Start Your Journey →
+  </button>
+</a>
+
+  </div>
+</section>
+
+<!-- ⚓ Footer -->
+<footer class="py-8 px-4 border-t border-border/50 text-center text-muted-foreground">
+  © 2024 Raahi 2.0. Your AI Travel Companion.
+</footer>

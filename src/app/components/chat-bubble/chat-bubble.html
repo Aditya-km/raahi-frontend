@@ -1,0 +1,82 @@
+<!-- src/app/components/chat-bubble/chat-bubble.html -->
+
+<!-- 🫧 Floating Bubble -->
+<button
+  class="raahi-chat-bubble"
+  type="button"
+  (click)="toggleOpen()"
+  *ngIf="!isOpen"
+>
+  <div class="raahi-bubble-inner">
+    <span class="raahi-emoji">✨</span>
+  </div>
+</button>
+
+<!-- 💬 Chat Window -->
+<div *ngIf="isOpen" class="raahi-chat-overlay">
+  <div class="raahi-chat-panel">
+
+    <!-- Header -->
+    <div class="raahi-chat-header">
+      <div class="raahi-header-main">
+        <div class="raahi-avatar">
+          <span>✨</span>
+        </div>
+        <div class="raahi-header-text">
+          <div class="raahi-title">Raahi Assistant</div>
+          <div class="raahi-subtitle">
+            Your AI travel buddy
+            <span *ngIf="destination"> · {{ destination }}</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="raahi-close-btn" type="button" (click)="close()">
+        ✕
+      </button>
+    </div>
+
+    <!-- Messages -->
+    <div class="raahi-chat-messages">
+      <div
+        *ngFor="let msg of messages"
+        class="raahi-message-row"
+        [ngClass]="{ 'from-assistant': isAssistant(msg), 'from-user': !isAssistant(msg) }"
+      >
+        <div class="raahi-message-bubble">
+          <div class="raahi-message-text">
+            {{ msg.content }}
+          </div>
+          <div class="raahi-message-time">
+            {{ msg.timestamp | date: 'shortTime' }}
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isSending" class="raahi-typing">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="raahi-chat-input">
+      <textarea
+        [(ngModel)]="inputText"
+        (keydown)="onKeyDown($event)"
+        rows="1"
+        placeholder="Ask about a place, safety, weather, or what to do next..."
+      ></textarea>
+
+      <button
+        type="button"
+        class="raahi-send-btn"
+        [disabled]="isSending || !inputText.trim()"
+        (click)="send()"
+      >
+        ➤
+      </button>
+    </div>
+  </div>
+</div>
