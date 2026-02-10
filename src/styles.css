@@ -1,7 +1,10 @@
+
+
 /* You can add global styles to this file, and also import other style files */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 /* 🌄 Raahi 2.0 custom utilities */
 .gradient-hero {

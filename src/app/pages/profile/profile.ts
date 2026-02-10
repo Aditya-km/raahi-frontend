@@ -145,6 +145,13 @@ export class Profile {
   }
 
   // --------------------------------
+  // ➕ Add Hidden Place (NEW)
+  // --------------------------------
+  goToAddHiddenPlace() {
+    this.router.navigate(['/add-hidden-place']);
+  }
+
+  // --------------------------------
   // 🌟 Extract social-media vibe tags
   // --------------------------------
   extractVibeTags(): string[] {
@@ -164,8 +171,7 @@ export class Profile {
           .split(/[^a-zA-Z]+/)
           .filter((w: string) => w.length > 3);
 
-words.forEach((w: string) => tags.add(w));
-
+        words.forEach((w: string) => tags.add(w));
       }
     }
 

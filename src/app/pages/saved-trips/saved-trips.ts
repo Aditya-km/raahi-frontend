@@ -34,6 +34,9 @@ export class SavedTrips implements OnInit {
   skipSelection: number[] = [];
 
   baselineDays: number = 0;
+  startTime!: string;
+cutoffTime!: string;
+
 
   constructor(private router: Router) {}
 
@@ -72,6 +75,8 @@ export class SavedTrips implements OnInit {
 
   openTripModal(plan: any) {
     this.selectedTrip = JSON.parse(JSON.stringify(plan)); // deep copy
+    this.startTime  = plan.startTime  || '09:00';
+  this.cutoffTime = plan.cutoffTime || '19:00';
     this.baselineDays = this.selectedTrip.itinerary.length;
     this.showModal = true;
   }
@@ -95,103 +100,84 @@ export class SavedTrips implements OnInit {
     }
   }
 
+  
+
+toMinutes(timeStr: string): number {
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+
+fromMinutes(mins: number): string {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+}
+
   /* --------------------------------------------------------------------------
      DELAY LOGIC (Copied fully from Plan-Trip, adapted for saved itinerary)
   ---------------------------------------------------------------------------*/
 
-  buildItineraryWithDelay(delayConfig?: { startIndex: number; minutes: number }) {
-    const days = this.selectedTrip.itinerary;
-    if (!days || days.length === 0) {
-      return { plan: [], totalDays: 0, overflowActivities: [] };
-    }
+  buildItineraryWithDelay(delayConfig?: { startIndex:number; minutes:number }) {
 
-    const flat: any[] = [];
-    days.forEach((d: any) => {
-      d.activities.forEach((a: any) => flat.push(a));
-    });
+  const plan = JSON.parse(JSON.stringify(this.selectedTrip.itinerary));
+if (!plan || plan.length === 0) {
+  return {
+    plan: [],
+    totalDays: this.baselineDays,
+    overflowActivities: []
+  };
+}
 
-    let currentTime = null;
-    let itineraryDays: any[] = [];
-    let currentDay = 1;
+  const dayStart  = this.toMinutes(this.startTime || '09:00');
+  const cutoff    = this.toMinutes(this.cutoffTime || '19:00');
 
-    itineraryDays[currentDay] = {
-      day: currentDay,
-      title: `Day ${currentDay} in ${this.selectedTrip.destination}`,
-      activities: []
-    };
+  let overflow:any[] = [];
+  let delayApplied = false;
 
-    let delayApplied = false;
+  plan.forEach((day:any) => {
 
-    flat.forEach((act: any, idx: number) => {
-      let start = act.startTime;
-      let end = act.endTime;
+    let currentTime = dayStart;
 
-      let startMinutes =
-        parseInt(start.split(':')[0]) * 60 + parseInt(start.split(':')[1]);
-      let endMinutes =
-        parseInt(end.split(':')[0]) * 60 + parseInt(end.split(':')[1]);
+    day.activities.forEach((act:any) => {
 
-      if (delayConfig && !delayApplied && idx >= delayConfig.startIndex) {
-        startMinutes += delayConfig.minutes;
-        endMinutes += delayConfig.minutes;
+      // apply delay ONLY ONCE — from this activity onward
+      if (delayConfig && !delayApplied && act.baseIndex >= delayConfig.startIndex) {
+        currentTime += delayConfig.minutes;
         delayApplied = true;
       }
 
-      const newStart = this.fromMinutes(startMinutes);
-      const newEnd = this.fromMinutes(endMinutes);
+      const duration =
+        this.toMinutes(act.endTime) -
+        this.toMinutes(act.startTime);
 
-      // Check if overflow into next day
-      if (endMinutes > 22 * 60) {
-        currentDay++;
-        itineraryDays[currentDay] = {
-          day: currentDay,
-          title: `Day ${currentDay} in ${this.selectedTrip.destination}`,
-          activities: []
-        };
+      let start = currentTime;
+      let end   = start + duration;
 
-        // Reset to morning
-        const morning = 9 * 60;
-        const newStart2 = this.fromMinutes(morning);
-        const newEnd2 = this.fromMinutes(morning + (endMinutes - startMinutes));
-
-        itineraryDays[currentDay].activities.push({
-          ...act,
-          startTime: newStart2,
-          endTime: newEnd2,
-          baseIndex: idx
-        });
-
-      } else {
-        itineraryDays[currentDay].activities.push({
-          ...act,
-          startTime: newStart,
-          endTime: newEnd,
-          baseIndex: idx
-        });
+      // If exceeds cutoff → push overflow & DO NOT SCHEDULE
+      if (end > cutoff) {
+        overflow.push({ baseIndex: act.baseIndex, name: act.name });
+        return;
       }
+
+      act.startTime = this.fromMinutes(start);
+      act.endTime   = this.fromMinutes(end);
+
+      currentTime = end;
     });
 
-    const plan = Object.values(itineraryDays);
-    const totalDays = plan.length;
+  });
 
-    let overflow: any[] = [];
-    if (totalDays > this.baselineDays) {
-      const extraDays = plan.slice(this.baselineDays);
-      extraDays.forEach((dy: any) => {
-        dy.activities.forEach((a: any) => {
-          overflow.push({ baseIndex: a.baseIndex, name: a.name });
-        });
-      });
-    }
+  return {
+    plan,
+    totalDays: this.baselineDays,
+    overflowActivities: overflow
+  };
+}
 
-    return { plan, totalDays, overflowActivities: overflow };
-  }
 
-  fromMinutes(mins: number): string {
-    const h = Math.floor(mins / 60);
-    const m = mins % 60;
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-  }
+
+
+  
 
   openDelayPopup(act: any) {
     this.delayTargetIndex = act.baseIndex;
@@ -202,32 +188,39 @@ export class SavedTrips implements OnInit {
   }
 
   applyDelay() {
-    if (this.delayInput === null || this.delayInput <= 0) {
-      alert("Please enter valid delay");
-      return;
-    }
 
-    let minutes = this.delayInput;
-    if (this.delayUnit === "hr") minutes *= 60;
-
-    const delayConfig = {
-      startIndex: this.delayTargetIndex!,
-      minutes
-    };
-    this.lastDelayConfig = delayConfig;
-
-    const built = this.buildItineraryWithDelay(delayConfig);
-    const newDays = built.totalDays;
-
-    if (newDays > this.baselineDays && built.overflowActivities.length > 0) {
-      this.overflowActivities = built.overflowActivities;
-      this.showSkipPopup = true;
-    } else {
-      this.selectedTrip.itinerary = built.plan;
-    }
-
-    this.showDelayPopup = false;
+  if (this.delayInput === null || this.delayInput <= 0) {
+    alert("Please enter valid delay");
+    return;
   }
+
+  let minutes = this.delayInput;
+  if (this.delayUnit === "hr") minutes *= 60;
+
+  const delayConfig = {
+    startIndex: this.delayTargetIndex!,
+    minutes
+  };
+
+  this.lastDelayConfig = delayConfig;
+
+ const built = this.buildItineraryWithDelay(delayConfig);
+if (!built) return;   // <-- add this line
+
+if (built.totalDays > this.baselineDays &&
+    built.overflowActivities.length > 0) {
+
+
+    this.overflowActivities = built.overflowActivities;
+    this.showSkipPopup = true;
+
+  } else {
+    this.selectedTrip.itinerary = built.plan;
+  }
+
+  this.showDelayPopup = false;
+}
+
 
   toggleSkipSelection(baseIndex: number, checked: boolean) {
     if (checked) this.skipSelection.push(baseIndex);
@@ -302,5 +295,19 @@ export class SavedTrips implements OnInit {
 
     alert(`⭐ Rated ${name}: ${rating}`);
   }
+
+  // ----------------------------------
+// 🧭 OPEN DIRECTIONS (Saved Trips)
+// ----------------------------------
+openDirections(lat: number, lng: number, placeName: string) {
+  if (!lat || !lng) {
+    alert('Navigation unavailable for this place');
+    return;
+  }
+
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+  window.open(url, '_blank');
+}
+
 
 }

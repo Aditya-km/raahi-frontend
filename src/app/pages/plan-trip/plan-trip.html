@@ -41,6 +41,115 @@
       />
     </div>
 
+    <!-- 🔹 SMART FILTERS -->
+<div class="mb-10 max-w-3xl mx-auto bg-white/60 border border-gray-300 rounded-xl p-5">
+
+  <h3 class="text-lg font-semibold text-gray-800 mb-4">
+    🎯 Smart Filters
+  </h3>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    <!-- Age Group -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        Age Group
+      </label>
+      <select
+        [(ngModel)]="selectedAgeGroup"
+        class="w-full px-3 py-2 border rounded-lg"
+      >
+        <option value="">Any</option>
+        <option value="child">Child</option>
+        <option value="adult">Adult</option>
+        <option value="senior">Senior Citizen</option>
+      </select>
+    </div>
+
+    <!-- Budget -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        Budget
+      </label>
+      <select
+        [(ngModel)]="selectedBudget"
+        class="w-full px-3 py-2 border rounded-lg"
+      >
+        <option value="">Any</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+
+    <!-- Interests -->
+    <div class="md:col-span-2">
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        Interests
+      </label>
+
+      <div class="flex flex-wrap gap-2">
+
+        <label class="flex items-center gap-1 text-sm">
+          <input
+  type="checkbox"
+  (change)="toggleInterest('temple', $event.target.checked)"
+>
+
+          Temple
+        </label>
+
+        <label class="flex items-center gap-1 text-sm">
+          <input
+  type="checkbox"
+  (change)="toggleInterest('temple', $event.target.checked)"
+>
+
+          Nature
+        </label>
+
+        <label class="flex items-center gap-1 text-sm">
+          <input
+  type="checkbox"
+  (change)="toggleInterest('temple', $event.target.checked)"
+>
+
+          Waterfall
+        </label>
+
+        <label class="flex items-center gap-1 text-sm">
+          <input
+  type="checkbox"
+  (change)="toggleInterest('temple', $event.target.checked)"
+>
+
+          Trekking
+        </label>
+
+        <label class="flex items-center gap-1 text-sm">
+          <input
+  type="checkbox"
+  (change)="toggleInterest('temple', $event.target.checked)"
+>
+
+          Historical
+        </label>
+
+      </div>
+    </div>
+
+    <!-- Nearby First -->
+    <div class="md:col-span-2">
+      <label class="flex items-center gap-2 text-sm">
+        <input type="checkbox" [(ngModel)]="sortNearbyFirst">
+        Show nearby places first
+      </label>
+    </div>
+
+  </div>
+
+</div>
+
     <!-- Generate Button -->
     <button
       (click)="generateTrip()"
@@ -96,15 +205,32 @@
                   </div>
                 </div>
 
-                <!-- RIGHT (ONLY DELAY NOW) -->
-                <div>
-                  <button
-                    (click)="openDelayPopup(act.baseIndex, act.name)"
-                    class="px-3 py-1 bg-yellow-400 text-black text-xs font-semibold rounded-lg hover:bg-yellow-300"
-                  >
-                    ⏳ Delay
-                  </button>
-                </div>
+                <!-- RIGHT ACTIONS -->
+<div class="flex gap-2">
+
+  <button
+    (click)="openDelayPopup(act.baseIndex, act.name)"
+    class="px-3 py-1 bg-yellow-400 text-black text-xs font-semibold rounded-lg hover:bg-yellow-300"
+  >
+    ⏳ Delay
+  </button>
+  <button
+  *ngIf="act.lat && act.lng"
+  (click)="openDirections(act.lat, act.lng, act.name)"
+  class="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700"
+>
+  🧭 Get Directions
+</button>
+
+
+
+
+  
+
+  
+
+</div>
+
 
               </div>
             </div>
@@ -112,6 +238,8 @@
 
         </div>
       </div>
+
+     
 
       <!-- Save / Home Buttons -->
       <div class="mt-10 text-center">

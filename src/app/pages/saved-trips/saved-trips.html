@@ -111,6 +111,15 @@
                 ⏳ Delay
               </button>
 
+              <button
+  *ngIf="act.lat && act.lng"
+  (click)="openDirections(act.lat, act.lng, act.name)"
+  class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+>
+  🧭 Get Directions
+</button>
+
+
             </div>
 
           </li>

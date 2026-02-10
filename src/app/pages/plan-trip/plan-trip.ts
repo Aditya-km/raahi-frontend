@@ -12,6 +12,7 @@ import { SocialService } from '../../services/social.service';
 // ⭐ RL SERVICE IMPORT
 import { RLService } from '../../services/rl.service';
 
+
 @Component({
   selector: 'app-plan-trip',
   standalone: true,
@@ -65,6 +66,18 @@ export class PlanTrip {
   dragging = false;
   dragOffset = { x: 0, y: 0 };
   dragPos = { x: 1000, y: 150 };
+  
+
+
+    // ----------------------------------
+  // 🔹 PHASE 2 — SMART FILTERS STATE
+  // ----------------------------------
+
+  selectedAgeGroup: string = '';        // child | adult | senior
+  selectedInterests: string[] = [];     // temple, nature, trekking...
+  selectedBudget: string = '';          // low | medium | high
+  sortNearbyFirst: boolean = false;
+
 
   constructor(
     private router: Router,
@@ -187,7 +200,54 @@ private resolveSlug(dest: string): string {
 
   return 25; // default
 }
-  
+    // ----------------------------------
+  // 🔹 PHASE 2 — APPLY SMART FILTERS
+  // ----------------------------------
+  applySmartFilters(places: any[]): any[] {
+    let filtered = [...places];
+
+    // Interest filter
+    if (this.selectedInterests.length > 0) {
+      filtered = filtered.filter(p =>
+        this.selectedInterests.includes(
+          (p.category || '').toLowerCase()
+        )
+      );
+    }
+
+    // Budget filter
+    if (this.selectedBudget) {
+      filtered = filtered.filter(p =>
+        (p.budget || '').toLowerCase() === this.selectedBudget
+      );
+    }
+
+    // Age group filter
+    if (this.selectedAgeGroup) {
+      filtered = filtered.filter(p => {
+        const ages: string[] = p.suitableFor || [];
+        return ages.includes(this.selectedAgeGroup);
+      });
+    }
+
+    return filtered;
+  }
+  // ----------------------------------
+// 🔹 PHASE 2 — INTEREST TOGGLE
+// ----------------------------------
+toggleInterest(value: string, checked: boolean) {
+  if (checked) {
+    if (!this.selectedInterests.includes(value)) {
+      this.selectedInterests.push(value);
+    }
+  } else {
+    this.selectedInterests = this.selectedInterests.filter(
+      v => v !== value
+    );
+  }
+}
+
+
 
   travelMinutesBetween(p1: any, p2: any, speed: number): number {
     if (!p1 || !p2) return 0;
@@ -286,6 +346,8 @@ private resolveSlug(dest: string): string {
         durationMinutes: detail.durationMinutes,
         baseIndex: index,
         isHiddenGem: item.isHiddenGem === true,
+        lat: detail.lat,
+        lng: detail.lng,
 
       });
 
@@ -375,20 +437,31 @@ if (hiddenCircuit?.places_detailed) {
 
       this.baseSequence = [];
 
+// Collect all detailed places
+let allDetailedPlaces: any[] = [];
+
+for (const circuit of Object.values(this.placeData.circuits)) {
+  const c: any = circuit as any;
+  if (c.places_detailed) {
+    allDetailedPlaces.push(...c.places_detailed);
+  }
+}
+
+// Apply smart filters
+let filteredPlaces = this.applySmartFilters(allDetailedPlaces);
+
+// Fallback if too few results
+if (filteredPlaces.length < 5) {
+  filteredPlaces = allDetailedPlaces;
+  alert('Not enough places match your filters. Showing closest matches.');
+}
+
 for (const day of result.days) {
   for (const place of day.places) {
-    let foundDetail: any = null;
 
-    for (const circuit of Object.values(this.placeData.circuits)) {
-      const c: any = circuit as any;
-      const match = c.places_detailed.find(
-        (p: any) => p.name === place.name
-      );
-      if (match) {
-        foundDetail = match;
-        break;
-      }
-    }
+    const foundDetail = filteredPlaces.find(
+      (p: any) => p.name === place.name
+    );
 
     if (!foundDetail) continue;
 
@@ -402,6 +475,7 @@ for (const day of result.days) {
     });
   }
 }
+
 
 /* ---------------------------------------------------
    🔹 Ensure minimum 2 hidden gems in itinerary
@@ -650,6 +724,8 @@ if (hiddenCircuit?.places_detailed) {
           this.preferences.return_date ||
           (this.preferences as any).returnDate ||
           this.preferences.endDate,
+          startTime: this.startTime,
+    cutoffTime: this.cutoffTime,
         itinerary: this.itinerary.plan,
       },
     };
@@ -667,6 +743,25 @@ if (hiddenCircuit?.places_detailed) {
   goHome() {
     this.router.navigate(['/']);
   }
+
+  openDirections(lat: number, lng: number, placeName: string) {
+  if (!lat || !lng) {
+    alert('Navigation unavailable for this place');
+    return;
+  }
+
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+
+  window.open(url, '_blank');
+}
+
+
+
+  // ----------------------------------
+// 🗺️ PHASE 3 — OPEN MAP & TRACK USER
+// ----------------------------------
+
+
 
   // -------------------------------
   // 🔥 RL FUNCTIONS (Existing)

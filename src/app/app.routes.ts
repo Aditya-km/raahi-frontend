@@ -7,6 +7,8 @@ export const routes: Routes = [
   { path: 'plan', loadComponent: () => import('./pages/plan-trip/plan-trip').then(m => m.PlanTrip) },
   { path: 'saved-trips', loadComponent: () => import('./pages/saved-trips/saved-trips').then(m => m.SavedTrips) },
   { path: 'profile', loadComponent: () => import('./pages/profile/profile').then(m => m.Profile) },
+  { path: 'add-hidden-place', loadComponent: () => import('./pages/add-hidden-place/add-hidden-place').then(m => m.AddHiddenPlace) },
+
 
   // ⭐ ADDED THIS (nothing else changed)
   { path: 'edit-profile', loadComponent: () => import('./pages/edit-profile/edit-profile').then(m => m.EditProfile) },

@@ -30,29 +30,25 @@
       Loading attractions...
     </div>
 
-    <!-- Destinations Grid -->
+    <!-- Destinations Grid (NAMES ONLY) -->
     <div *ngIf="!loading" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
       <div
-        *ngFor="let place of destinations"
-        class="bg-white rounded-xl overflow-hidden shadow hover:shadow-xl transition transform hover:-translate-y-1"
-      >
-        <img [src]="place.image" alt="{{ place.name }}" class="h-48 w-full object-cover" />
+  *ngFor="let place of destinations"
+  class="group bg-white/80 backdrop-blur-md rounded-2xl p-5 border border-gray-200 shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer"
+>
+  <div class="flex items-center justify-center gap-3">
+    <span class="text-xl">📍</span>
 
-        <div class="p-4 text-left">
-          <h3 class="text-xl font-semibold mb-1 text-gray-900">{{ place.name }}</h3>
+    <h3 class="text-lg font-semibold text-gray-900 group-hover:text-orange-600 transition">
+      {{ place.name }}
+    </h3>
+  </div>
 
-          <p class="text-sm text-gray-600 mb-3">
-            {{ place.description }}
-          </p>
+  <div class="mt-3 h-1 w-12 mx-auto rounded-full bg-gradient-to-r from-orange-400 to-pink-500 opacity-0 group-hover:opacity-100 transition"></div>
+</div>
 
-          <button
-            (click)="goToPlan()"
-            class="px-4 py-2 rounded-lg bg-gradient-to-r from-orange-400 to-pink-500 text-white hover:opacity-90 transition"
-          >
-            Add to Trip →
-          </button>
-        </div>
-      </div>
+
     </div>
 
   </div>
